@@ -34,7 +34,7 @@ public class Vector {
         return x * x + y * y;
     }
     
-    public void normalize() {
+    public void normalise() {
         double length = length();
         if (length > 0) {
             scale(1 / length);

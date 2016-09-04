@@ -4,6 +4,8 @@ public class FastMath {
     
     private static final double[] cos, sin, tan;
     
+    private static final double toDegrees = 180.0 / Math.PI;
+    
     static {
         sin = new double[360];
         cos = new double[360];
@@ -33,6 +35,10 @@ public class FastMath {
     
     public static double tan(double degrees) {
         return tan[degreesToIndex(degrees)];
+    }
+    
+    public static double toDegrees(double radians) {
+        return radians * toDegrees;
     }
     
 }

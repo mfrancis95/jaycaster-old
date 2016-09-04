@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 
 public abstract class Game implements KeyListener {
     
+    public static long tick;
+    
     public final long maxTicks;
     
     public final int targetFPS;
@@ -87,6 +89,7 @@ public abstract class Game implements KeyListener {
             }
         }
         entities.sort(comparator);
+        tick++;
     }
     
     private class Loop implements Runnable {

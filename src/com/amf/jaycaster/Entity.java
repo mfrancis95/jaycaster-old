@@ -12,6 +12,8 @@ public class Entity {
     
     public Vector direction, position, scale;
     
+    public Effect effect = Effect.IDENTITY;
+    
     public double opacity, radius, viewDistanceSquared, yOffset;
     
     public Entity() {

@@ -8,7 +8,9 @@ public class Tile {
     
     public boolean backgroundCeiling, backgroundFloor, backgroundWall;
     
-    public Bitmap ceilingBitmap, floorBitmap, wallBitmap;    
+    public Bitmap ceilingBitmap, floorBitmap, wallBitmap;
+    
+    public Effect effect = Effect.IDENTITY;
     
     public Type type;
     

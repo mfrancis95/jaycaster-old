@@ -34,11 +34,11 @@ public class ControllableEntity extends Entity {
         }
         if (controls[CONTROLS_TURNLEFT]) {
             direction.rotate(-turnSpeed);
-            direction.normalize();
+            direction.normalise();
         } 
         else if (controls[CONTROLS_TURNRIGHT]) {
             direction.rotate(turnSpeed);
-            direction.normalize();
+            direction.normalise();
         }
         super.update(game);
     }
