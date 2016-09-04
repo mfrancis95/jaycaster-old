@@ -2,9 +2,11 @@ package com.amf.jaycaster;
 
 public class Fog {
     
+    public double alpha, distance, distanceSquared;
+    
     public int color;
     
-    public double alpha, distance, distanceSquared;
+    private double[] fog, fogSquared;
     
     public Fog(int color, double alpha, double distance) {
         this.color = color;
@@ -14,17 +16,41 @@ public class Fog {
     }
     
     public int blend(int color, double distance) {
-        if (alpha >= 1) {
-            return distance >= this.distance ? this.color : Color.blend(color, this.color, distance / this.distance);
+        if (fog == null) {
+            return Color.blend(color, this.color, distance >= this.distance ? alpha : alpha * distance / this.distance);
         }
-        return Color.blend(color, this.color, distance >= this.distance ? alpha : alpha * distance / this.distance);
+        else {
+            return Color.blend(color, this.color, distance >= this.distance ? alpha : fog[(int) distance]);
+        }
     }
     
     public int blendSquared(int color, double distanceSquared) {
-        if (alpha >= 1) {
-            return distanceSquared >= this.distanceSquared ? this.color : Color.blend(color, this.color, distanceSquared / this.distanceSquared);
+        if (fogSquared == null) {
+            return Color.blend(color, this.color, distanceSquared >= this.distanceSquared ? alpha : alpha * distanceSquared / this.distanceSquared);
         }
-        return Color.blend(color, this.color, distanceSquared >= this.distanceSquared ? alpha : alpha * distanceSquared / this.distanceSquared);
+        else {
+            return Color.blend(color, this.color, distanceSquared >= this.distanceSquared ? alpha : fogSquared[(int) distanceSquared]);
+        }
+    }
+    
+    public boolean isOptimised() {
+        return fog != null;
+    }
+    
+    public void setOptimised(boolean optimised) {
+        if (optimised) {
+            fog = new double[(int) Math.ceil(distance)];
+            for (int i = 0; i < fog.length; i++) {
+                fog[i] = alpha * i / distance;
+            }
+            fogSquared = new double[(int) Math.ceil(distanceSquared)];
+            for (int i = 0; i < fogSquared.length; i++) {
+                fogSquared[i] = alpha * i / distanceSquared;
+            }
+        }
+        else {
+            fog = fogSquared = null;
+        }
     }
     
 }
