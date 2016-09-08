@@ -16,7 +16,7 @@ public class Animation {
     
     public Animation(int ticksPerFrame) {
         this.ticksPerFrame = ticksPerFrame;
-        repetitions = -1;
+        repetitions = REPETITIONS_INFINITE;
     }
     
     public Animation(int ticksPerFrame, int repetitions) {
@@ -26,6 +26,10 @@ public class Animation {
     
     public Bitmap getFrame() {
         return bitmaps[index];
+    }
+    
+    public boolean isFinished() {
+        return repetitions < 0 || repetitionCount > repetitions;
     }
     
     public void nextFrame() {
