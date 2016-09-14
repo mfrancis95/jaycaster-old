@@ -11,26 +11,44 @@ public class ControllableEntity extends Entity {
     
     public final boolean[] controls;
     
-    public double moveSpeed, turnSpeed;
+    public double acceleration, friction, maxSpeed, turnSpeed;
+    
+    private final Vector forward, strafe;
+    
+    private double forwardThrust, strafeThrust;
     
     public ControllableEntity(int controls, double moveSpeed, double turnSpeed) {
+        this(controls, moveSpeed, 0, moveSpeed, turnSpeed);
+    }
+    
+    public ControllableEntity(int controls, double acceleration, double friction, double maxSpeed, double turnSpeed) {
         this.controls = new boolean[controls < 6 ? 6 : controls];
-        this.moveSpeed = moveSpeed;
+        this.acceleration = acceleration;
+        this.friction = friction;
+        this.maxSpeed = maxSpeed;
         this.turnSpeed = turnSpeed;
+        forward = new Vector();
+        strafe = new Vector();
     }
     
     public void update(Game game) {
         if (controls[CONTROLS_FORWARD]) {
-            move(game.map, Direction.FORWARD, moveSpeed);
+            forwardThrust = Math.min(maxSpeed, forwardThrust + acceleration);
         } 
         else if (controls[CONTROLS_BACKWARD]) {
-            move(game.map, Direction.BACKWARD, moveSpeed);
+            forwardThrust = Math.max(-maxSpeed, forwardThrust - acceleration);
+        }
+        else {
+            forwardThrust = Math.abs(forwardThrust) < 0.0001 ? 0 : forwardThrust * friction;
         }
         if (controls[CONTROLS_STRAFELEFT]) {
-            move(game.map, Direction.LEFT, moveSpeed);
+            strafeThrust = Math.max(-maxSpeed, strafeThrust - acceleration);
         }
         else if (controls[CONTROLS_STRAFERIGHT]) {
-            move(game.map, Direction.RIGHT, moveSpeed);
+            strafeThrust = Math.min(maxSpeed, strafeThrust + acceleration);
+        }
+        else {
+            strafeThrust = Math.abs(strafeThrust) < 0.0001 ? 0 : strafeThrust * friction;
         }
         if (controls[CONTROLS_TURNLEFT]) {
             direction.rotate(-turnSpeed);
@@ -40,6 +58,12 @@ public class ControllableEntity extends Entity {
             direction.rotate(turnSpeed);
             direction.normalise();
         }
+        forward.set(direction);
+        forward.scale(forwardThrust);
+        strafe.set(-direction.y, direction.x);
+        strafe.scale(strafeThrust);
+        velocity.set(forward);
+        velocity.add(strafe);
         super.update(game);
     }
     
