@@ -49,7 +49,7 @@ public class Ray {
                 mapY += stepY;
                 side = true;
             }
-            if ((tile = map.getTile(mapX, mapY)).type == Tile.Type.WALL) {
+            if ((tile = map.getTile(mapX, mapY)).isRaised()) {
                 hit = true;
             }
         }
