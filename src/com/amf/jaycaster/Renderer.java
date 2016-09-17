@@ -139,9 +139,7 @@ public class Renderer {
                             if (entity.opacity < 1) {
                                 pixel = Color.blend(screen.getPixel(x, y), pixel, entity.opacity);
                             }
-                            if (map.fog != null) {
-                                pixel = map.fog.blendSquared(pixel, distanceSquared);
-                            }
+                            pixel = map.fog.blendSquared(pixel, distanceSquared);
                             for (int i = 0; i <= raySkip; i++) {
                                 screen.setPixel(x + i, y, pixel);
                             }
@@ -211,9 +209,7 @@ public class Renderer {
                             pixel = Color.blend(pixel, 0, 0.5);
                         }
                         pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
-                        if (map.fog != null) {
-                            pixel = map.fog.blend(pixel, ray.distance);
-                        }
+                        pixel = map.fog.blend(pixel, ray.distance);
                         for (int i = 0; i <= raySkip; i++) {
                             for (int j = 1; j <= map.experimentalHeight; j++) {
                                 int heightY = y - (lineHeight - 1) * (j - 1);
@@ -250,7 +246,7 @@ public class Renderer {
                         double weight = floorTable[y] / ray.distance;
                         double currentFloorX = weight * floorXWall + (1 - weight) * camera.position.x;
                         double currentFloorY = weight * floorYWall + (1 - weight) * camera.position.y;
-                        Tile tile = map.getTile((int) currentFloorX, (int) currentFloorY);
+                        Tile tile = map.getTile(currentFloorX, currentFloorY);
                         int pixel;
                         if (tile.backgroundFloor) {
                             Bitmap bitmap = map.background;
@@ -265,9 +261,7 @@ public class Renderer {
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);
                             }
-                            if (map.fog != null) {
-                                pixel = map.fog.blend(pixel, floorTable[y]);
-                            }
+                            pixel = map.fog.blend(pixel, floorTable[y]);
                         }
                         for (int i = 0; i <= raySkip; i++) {
                             screen.setPixel(x + i, y - 1, pixel);
@@ -285,9 +279,7 @@ public class Renderer {
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);
                             }
-                            if (map.fog != null) {
-                                pixel = map.fog.blend(pixel, floorTable[y]);
-                            }
+                            pixel = map.fog.blend(pixel, floorTable[y]);
                         }
                         for (int i = 0; i <= raySkip; i++) {
                             int heightY = screen.height - y - lineHeight * (map.experimentalHeight - 1);

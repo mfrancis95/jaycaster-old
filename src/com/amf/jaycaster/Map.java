@@ -34,6 +34,7 @@ public class Map {
         this.rows = rows;
         this.columns = columns;
         experimentalHeight = 1;
+        fog = new Fog(0, 0, 0);
         lightDirection = LightDirection.NORTHEAST;
     }
     
