@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -29,6 +30,8 @@ public abstract class Game implements KeyListener {
     public Map map;
     
     public Renderer renderer;
+    
+    private final HashMap<String, Object> objects;
     
     private final Screen screen;
     
@@ -59,8 +62,17 @@ public abstract class Game implements KeyListener {
         this.targetFPS = targetFPS;
         maxTicks = 1000 / targetFPS;
         entities = new LinkedList<>();
+        objects = new HashMap<>();
         temp1 = new Vector();
         temp2 = new Vector();
+    }
+    
+    public void addObject(String name, Object object) {
+        objects.put(name, object);
+    }
+    
+    public Object getObject(String name) {
+        return objects.get(name);
     }
     
     public void render(Graphics2D g) {

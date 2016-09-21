@@ -38,12 +38,16 @@ public class Map {
         lightDirection = LightDirection.NORTHEAST;
     }
     
+    public Tile getTile(Vector vector) {
+        return getTile((int) vector.x, (int) vector.y);
+    }
+    
     public Tile getTile(int x, int y) {
         return tiles[x + y * rows];
     }
     
     public Tile getTile(double x, double y) {
-        return tiles[(int) x + (int) y * rows];
+        return getTile((int) x, (int) y);
     }
     
 }

@@ -12,15 +12,18 @@ public class Entity {
     
     public Vector direction, position, scale, velocity;
     
-    public Effect effect = Effect.IDENTITY;
+    public Effect effect;
     
     public double opacity, radius, viewDistanceSquared, yOffset;
+    
+    private Tile lastTile;
     
     public Entity() {
         position = new Vector();
         direction = new Vector(1, 0);
         scale = new Vector(1, 1);
         velocity = new Vector();
+        effect = Effect.IDENTITY;
         opacity = 1;
         viewDistanceSquared = Double.MAX_VALUE;
         visible = true;
@@ -40,6 +43,14 @@ public class Entity {
     public void update(Game game) {
         currentAnimation.nextFrame();
         move(game.map);
+        Tile tile = game.map.getTile(position);
+        if (tile != lastTile) {
+            if (lastTile != null) {
+                lastTile.triggerLeave(game, this);
+            }
+            tile.triggerEnter(game, this);
+        }
+        lastTile = tile;
     }
     
 }
