@@ -53,14 +53,16 @@ public class Bitmap {
     
     public final int height, width;
     
+    public Bitmap(Bitmap bitmap) {
+        this(bitmap.width, bitmap.height, Arrays.copyOf(bitmap.pixels, bitmap.pixels.length));
+    }
+    
     public Bitmap(BufferedImage image) {
         this(image.getWidth(), image.getHeight(), ((DataBufferInt) image.getRaster().getDataBuffer()).getData());
     }
     
     public Bitmap(int width, int height) {
-        pixels = new int[width * height];
-        this.width = width;
-        this.height = height;
+        this(width, height, new int[width * height]);
     }
     
     public Bitmap(int width, int height, int[] pixels) {
@@ -69,8 +71,13 @@ public class Bitmap {
         this.pixels = pixels;
     }
     
-    public void fill(int color) {
-        Arrays.fill(pixels, color);
+    public void apply(Effect effect) {
+        Bitmap bitmap = new Bitmap(this);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pixels[x + y * width] = effect.affect(bitmap, x, y);
+            }
+        }
     }
     
     public int getPixel(int x, int y) {

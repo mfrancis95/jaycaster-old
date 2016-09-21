@@ -133,7 +133,7 @@ public class Renderer {
                     for (int y = drawStartY; y < drawEndY; y++) {
                         int texX = (x - (-entityWidth / 2 + entityScreenX)) * sprite.width / entityWidth;
                         int texY = ((y - yMove) * 2 - screen.height + entityHeight) * sprite.height / 2 / entityHeight;
-                        int pixel = entity.effect.apply(sprite, texX, texY);
+                        int pixel = entity.effect.affect(sprite, texX, texY);
                         if (pixel != 0) {
                             pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
                             if (entity.opacity < 1) {
@@ -204,7 +204,7 @@ public class Renderer {
                         bitmapX = bitmap.width - bitmapX - 1;
                     }
                     for (int y = drawStart; y < drawEnd; y++) {
-                        int pixel = ray.tile.effect.apply(bitmap, bitmapX, (y * 2 - screen.height + lineHeight) * bitmap.height / 2 / lineHeight);
+                        int pixel = ray.tile.effect.affect(bitmap, bitmapX, (y * 2 - screen.height + lineHeight) * bitmap.height / 2 / lineHeight);
                         if (shaded) {
                             pixel = Color.blend(pixel, 0, 0.5);
                         }
@@ -256,7 +256,7 @@ public class Renderer {
                             Bitmap bitmap = tile.floorBitmap;
                             int floorTexX = (int) (currentFloorX * bitmap.width) % bitmap.width;
                             int floorTexY = (int) (currentFloorY * bitmap.height) % bitmap.height;
-                            pixel = tile.effect.apply(bitmap, floorTexX, floorTexY);
+                            pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
                             pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);
@@ -274,7 +274,7 @@ public class Renderer {
                             Bitmap bitmap = tile.ceilingBitmap;
                             int floorTexX = (int) (currentFloorX * bitmap.width) % bitmap.width;
                             int floorTexY = (int) (currentFloorY * bitmap.height) % bitmap.height;
-                            pixel = tile.effect.apply(bitmap, floorTexX, floorTexY);
+                            pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
                             pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);

@@ -11,7 +11,7 @@ public class ColorEffect implements Effect {
         this.alpha = alpha;
     }
     
-    public int apply(Bitmap bitmap, int x, int y) {
+    public int affect(Bitmap bitmap, int x, int y) {
         return Color.blend(bitmap.getPixel(x, y), this.color, alpha);
     }
     

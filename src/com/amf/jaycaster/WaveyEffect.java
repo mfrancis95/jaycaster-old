@@ -4,20 +4,30 @@ public class WaveyEffect implements Effect {
     
     public Vector amplitude, frequency, waveFactor;
     
-    public boolean xWaveFactorX, yWaveFactorY;
+    public boolean animated, xWaveFactorX, yWaveFactorY;
+    
+    public double phase;
     
     public WaveyEffect(Vector amplitude, Vector frequency, Vector waveFactor) {
         this.amplitude = amplitude;
         this.frequency = frequency;
         this.waveFactor = waveFactor;
+        animated = true;
     }
     
-    public int apply(Bitmap bitmap, int x, int y) {
-        int newX = (int) (amplitude.x * FastMath.sin(FastMath.toDegrees(frequency.x * Game.tick + (xWaveFactorX ? x : y) * waveFactor.x)) + x) % bitmap.width;
+    public WaveyEffect(Vector amplitude, Vector frequency, Vector waveFactor, double phase) {
+        this.amplitude = amplitude;
+        this.frequency = frequency;
+        this.waveFactor = waveFactor;
+        this.phase = phase;
+    }
+    
+    public int affect(Bitmap bitmap, int x, int y) {
+        int newX = (int) (amplitude.x * FastMath.sin(Math.toDegrees(frequency.x * (animated ? Game.tick : phase) + (xWaveFactorX ? x : y) * waveFactor.x)) + x) % bitmap.width;
         if (newX < 0) {
             newX += bitmap.width;
         }
-        int newY = (int) (amplitude.y * FastMath.sin(FastMath.toDegrees(frequency.y * Game.tick + (yWaveFactorY ? y : x) * waveFactor.y)) + y) % bitmap.height;
+        int newY = (int) (amplitude.y * FastMath.sin(Math.toDegrees(frequency.y * (animated ? Game.tick : phase) + (yWaveFactorY ? y : x) * waveFactor.y)) + y) % bitmap.height;
         if (newY < 0) {
             newY += bitmap.height;
         }
