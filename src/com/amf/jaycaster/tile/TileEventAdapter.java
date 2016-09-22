@@ -1,4 +1,7 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.tile;
+
+import com.amf.jaycaster.entity.Entity;
+import com.amf.jaycaster.core.Game;
 
 public class TileEventAdapter implements TileEnterListener, TileLeaveListener {
 

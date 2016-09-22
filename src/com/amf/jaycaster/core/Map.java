@@ -1,4 +1,8 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
+
+import com.amf.jaycaster.graphics.Bitmap;
+import com.amf.jaycaster.graphics.Fog;
+import com.amf.jaycaster.tile.Tile;
 
 public class Map {
     
@@ -14,7 +18,7 @@ public class Map {
     
     public int ambientColor, experimentalHeight;
     
-    public double ambientFactor;
+    public double ambientAlpha;
     
     public Bitmap background;
     
@@ -42,12 +46,12 @@ public class Map {
         return getTile((int) vector.x, (int) vector.y);
     }
     
-    public Tile getTile(int x, int y) {
-        return tiles[x + y * rows];
-    }
-    
     public Tile getTile(double x, double y) {
         return getTile((int) x, (int) y);
     }
+    
+    public Tile getTile(int x, int y) {
+        return tiles[x + y * rows];
+    }    
     
 }

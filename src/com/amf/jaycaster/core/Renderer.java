@@ -1,6 +1,10 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
 
-import com.amf.jaycaster.Map.LightDirection;
+import com.amf.jaycaster.graphics.Bitmap;
+import com.amf.jaycaster.graphics.Color;
+import com.amf.jaycaster.entity.Entity;
+import com.amf.jaycaster.tile.Tile;
+import com.amf.jaycaster.core.Map.LightDirection;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -135,11 +139,11 @@ public class Renderer {
                         int texY = ((y - yMove) * 2 - screen.height + entityHeight) * sprite.height / 2 / entityHeight;
                         int pixel = entity.effect.affect(sprite, texX, texY);
                         if (pixel != 0) {
-                            pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
+                            pixel = Color.blend(pixel, map.ambientColor, map.ambientAlpha);
+                            pixel = map.fog.blendSquared(pixel, distanceSquared);
                             if (entity.opacity < 1) {
                                 pixel = Color.blend(screen.getPixel(x, y), pixel, entity.opacity);
-                            }
-                            pixel = map.fog.blendSquared(pixel, distanceSquared);
+                            }                            
                             for (int i = 0; i <= raySkip; i++) {
                                 screen.setPixel(x + i, y, pixel);
                             }
@@ -208,7 +212,7 @@ public class Renderer {
                         if (shaded) {
                             pixel = Color.blend(pixel, 0, 0.5);
                         }
-                        pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
+                        pixel = Color.blend(pixel, map.ambientColor, map.ambientAlpha);
                         pixel = map.fog.blend(pixel, ray.distance);
                         for (int i = 0; i <= raySkip; i++) {
                             for (int j = 1; j <= map.experimentalHeight; j++) {
@@ -257,7 +261,7 @@ public class Renderer {
                             int floorTexX = (int) (currentFloorX * bitmap.width) % bitmap.width;
                             int floorTexY = (int) (currentFloorY * bitmap.height) % bitmap.height;
                             pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
-                            pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
+                            pixel = Color.blend(pixel, map.ambientColor, map.ambientAlpha);
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);
                             }
@@ -275,7 +279,7 @@ public class Renderer {
                             int floorTexX = (int) (currentFloorX * bitmap.width) % bitmap.width;
                             int floorTexY = (int) (currentFloorY * bitmap.height) % bitmap.height;
                             pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
-                            pixel = Color.blend(pixel, map.ambientColor, map.ambientFactor);
+                            pixel = Color.blend(pixel, map.ambientColor, map.ambientAlpha);
                             if (map.experimentalEffect) {
                                 pixel = Color.blend(pixel, 0, weight);
                             }

@@ -1,5 +1,6 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics;
 
+import com.amf.jaycaster.graphics.effect.Effect;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;

@@ -1,5 +1,9 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.tile;
 
+import com.amf.jaycaster.graphics.Bitmap;
+import com.amf.jaycaster.entity.Entity;
+import com.amf.jaycaster.core.Game;
+import com.amf.jaycaster.graphics.effect.Effect;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,10 +48,6 @@ public class Tile {
         return type == Type.WALL || type == Type.FAKE;
     }
     
-    public void setBitmaps(Bitmap bitmap) {
-        ceilingBitmap = floorBitmap = wallBitmap = bitmap;
-    }
-    
     public void removeEnterListener(TileEnterListener listener) {
         enterListeners.remove(listener);
     }
@@ -55,6 +55,10 @@ public class Tile {
     public void removeLeaveListener(TileLeaveListener listener) {
         leaveListeners.remove(listener);
     }
+    
+    public void setBitmaps(Bitmap bitmap) {
+        ceilingBitmap = floorBitmap = wallBitmap = bitmap;
+    }    
     
     public void triggerEnter(Game game, Entity entity) {
         for (TileEnterListener listener : enterListeners) {

@@ -1,4 +1,4 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
 
 public class Vector {
     
@@ -52,14 +52,14 @@ public class Vector {
         y *= scale;
     }
     
-    public void set(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-    
     public void set(Vector vector) {
         x = vector.x;
         y = vector.y;
+    }    
+    
+    public void set(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
     
     public void subtract(Vector vector) {

@@ -1,4 +1,4 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics;
 
 public class Animation {
     
@@ -14,12 +14,12 @@ public class Animation {
         bitmaps = new Bitmap[] {bitmap};
     }
     
-    public Animation(int ticksPerFrame) {
-        this.ticksPerFrame = ticksPerFrame;
-        repetitions = REPETITIONS_INFINITE;
+    public Animation(Bitmap[] bitmaps, int ticksPerFrame) {
+        this(bitmaps, ticksPerFrame, REPETITIONS_INFINITE);
     }
     
-    public Animation(int ticksPerFrame, int repetitions) {
+    public Animation(Bitmap[] bitmaps, int ticksPerFrame, int repetitions) {
+        this.bitmaps = bitmaps;
         this.ticksPerFrame = ticksPerFrame;
         this.repetitions = repetitions;
     }
@@ -29,7 +29,7 @@ public class Animation {
     }
     
     public boolean isFinished() {
-        return repetitions < 0 || repetitionCount > repetitions;
+        return repetitions >= 0 && repetitionCount > repetitions;
     }
     
     public void nextFrame() {

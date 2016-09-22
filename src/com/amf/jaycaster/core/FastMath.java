@@ -1,4 +1,4 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
 
 public class FastMath {
     
@@ -9,10 +9,10 @@ public class FastMath {
         cos = new double[360];
         tan = new double[360];
         for (int i = 0; i < 360; i++) {
-            double value = i * Math.PI / 180.0;
-            sin[i] = Math.sin(value);
-            cos[i] = Math.cos(value);
-            tan[i] = Math.tan(value);
+            double radians = Math.toRadians(i);
+            sin[i] = Math.sin(radians);
+            cos[i] = Math.cos(radians);
+            tan[i] = Math.tan(radians);
         }
     }
     
@@ -21,10 +21,8 @@ public class FastMath {
     }
     
     private static int degreesToIndex(double degrees) {
-        if (degrees < 0) {
-            degrees = Math.abs(degrees + 360);
-        }
-        return (int) degrees % 360;
+        int index = (int) degrees % 360;
+        return index < 0 ? index + 360 : index;
     }
     
     public static double sin(double degrees) {

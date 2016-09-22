@@ -1,4 +1,7 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.entity;
+
+import com.amf.jaycaster.core.Game;
+import com.amf.jaycaster.core.Vector;
 
 public class ControllableEntity extends Entity {
     

@@ -1,4 +1,11 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.entity;
+
+import com.amf.jaycaster.graphics.Animation;
+import com.amf.jaycaster.core.Game;
+import com.amf.jaycaster.core.Map;
+import com.amf.jaycaster.core.Vector;
+import com.amf.jaycaster.tile.Tile;
+import com.amf.jaycaster.graphics.effect.Effect;
 
 public class Entity {
     
@@ -49,8 +56,8 @@ public class Entity {
                 lastTile.triggerLeave(game, this);
             }
             tile.triggerEnter(game, this);
+            lastTile = tile;
         }
-        lastTile = tile;
     }
     
 }

@@ -1,5 +1,6 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
 
+import com.amf.jaycaster.entity.Entity;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,8 +9,12 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -34,6 +39,8 @@ public abstract class Game implements KeyListener {
     private final HashMap<String, Object> objects;
     
     private final Screen screen;
+    
+    private final Set<ScheduledGameTask> tasks;
     
     private final Vector temp1, temp2;    
     
@@ -63,13 +70,14 @@ public abstract class Game implements KeyListener {
         maxTicks = 1000 / targetFPS;
         entities = new LinkedList<>();
         objects = new HashMap<>();
+        tasks = new TreeSet<>();
         temp1 = new Vector();
         temp2 = new Vector();
     }
     
     public void addObject(String name, Object object) {
         objects.put(name, object);
-    }
+    }  
     
     public Object getObject(String name) {
         return objects.get(name);
@@ -77,6 +85,10 @@ public abstract class Game implements KeyListener {
     
     public void render(Graphics2D g) {
         g.drawImage(buffer, 0, 0, window.getWidth(), window.getHeight(), null);
+    }
+    
+    public void schedule(GameTask task, long delay, TimeUnit unit) {
+        tasks.add(new ScheduledGameTask(task, tick + unit.convert(delay, TimeUnit.SECONDS) * targetFPS));
     }
     
     public void start() {
@@ -91,10 +103,18 @@ public abstract class Game implements KeyListener {
     }
     
     public void update() {
-        for (int i = 0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
+        for (Iterator<ScheduledGameTask> iterator = tasks.iterator(); iterator.hasNext();) {
+            ScheduledGameTask task = iterator.next();
+            if (tick < task.tick) {
+                break;
+            }
+            iterator.remove();
+            task.task.run(this);
+        }
+        for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) {
+            Entity entity = iterator.next();
             if (entity.destroyed) {
-                entities.remove(i--);
+                iterator.remove();
             }
             else {
                 entity.update(this);
@@ -120,6 +140,24 @@ public abstract class Game implements KeyListener {
                     catch (InterruptedException ex) {}
                 }
             }
+        }
+        
+    }
+    
+    private class ScheduledGameTask implements Comparable<ScheduledGameTask> {
+        
+        GameTask task;
+        
+        long tick;
+        
+        ScheduledGameTask(GameTask task, long tick) {
+            this.task = task;
+            this.tick = tick;
+        }
+
+        public int compareTo(ScheduledGameTask task) {
+            int result = (int) (tick - task.tick);
+            return result == 0 ? 1 : result;
         }
         
     }

@@ -1,4 +1,7 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics.effect;
+
+import com.amf.jaycaster.graphics.Bitmap;
+import com.amf.jaycaster.graphics.Color;
 
 public class ColorEffect implements Effect {
     

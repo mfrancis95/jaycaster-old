@@ -1,4 +1,9 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics.effect;
+
+import com.amf.jaycaster.graphics.Bitmap;
+import com.amf.jaycaster.core.FastMath;
+import com.amf.jaycaster.core.Game;
+import com.amf.jaycaster.core.Vector;
 
 public class WaveyEffect implements Effect {
     

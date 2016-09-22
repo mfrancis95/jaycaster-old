@@ -1,4 +1,4 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics;
 
 public class Fog {
     

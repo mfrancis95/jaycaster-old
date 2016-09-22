@@ -1,4 +1,6 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.graphics.effect;
+
+import com.amf.jaycaster.graphics.Bitmap;
 
 public interface Effect {
     

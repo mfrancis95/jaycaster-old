@@ -1,4 +1,6 @@
-package com.amf.jaycaster;
+package com.amf.jaycaster.core;
+
+import com.amf.jaycaster.tile.Tile;
 
 public class Ray {
     
