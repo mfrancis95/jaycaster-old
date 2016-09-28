@@ -17,7 +17,9 @@ public class Tile {
     
     public Bitmap ceilingBitmap, floorBitmap, wallBitmap;
     
-    public Effect effect; 
+    public Effect effect;
+    
+    public List<Entity> entities;
     
     public Type type;
     
@@ -27,6 +29,7 @@ public class Tile {
     
     public Tile() {
         effect = Effect.IDENTITY;
+        entities = new LinkedList<>();
         type = Type.FLOOR;
         enterListeners = new LinkedList<>();
         leaveListeners = new LinkedList<>();
@@ -61,12 +64,14 @@ public class Tile {
     }    
     
     public void triggerEnter(Game game, Entity entity) {
+        entities.add(entity);
         for (TileEnterListener listener : enterListeners) {
             listener.onEnter(game, this, entity);
         }
     }
     
     public void triggerLeave(Game game, Entity entity) {
+        entities.remove(entity);
         for (TileLeaveListener listener : leaveListeners) {
             listener.onLeave(game, this, entity);
         }

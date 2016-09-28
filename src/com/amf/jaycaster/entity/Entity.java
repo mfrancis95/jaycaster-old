@@ -23,7 +23,7 @@ public class Entity {
     
     public double opacity, radius, viewDistanceSquared, yOffset;
     
-    private Tile lastTile;
+    private Tile tile;
     
     public Entity() {
         position = new Vector();
@@ -37,26 +37,29 @@ public class Entity {
     }
     
     public void move(Map map) {
-        double deltaX = position.x + velocity.x;
-        double deltaY = position.y + velocity.y;
+        double deltaX = position.x + velocity.x, deltaY = position.y + velocity.y;
+        boolean addX = false;
         if (!map.getTile(deltaX + radius, position.y + radius).isImpenetrable() && !map.getTile(deltaX + radius, position.y - radius).isImpenetrable() && !map.getTile(deltaX - radius, position.y + radius).isImpenetrable() && !map.getTile(deltaX - radius, position.y - radius).isImpenetrable()) {
-            position.x += velocity.x;
+            addX = true;
         }
         if (!map.getTile(position.x + radius, deltaY + radius).isImpenetrable() && !map.getTile(position.x - radius, deltaY + radius).isImpenetrable() && !map.getTile(position.x + radius, deltaY - radius).isImpenetrable() && !map.getTile(position.x - radius, deltaY - radius).isImpenetrable()) {
-            position.y += velocity.y;
+            position.y = deltaY;
+        }
+        if (addX) {
+            position.x = deltaX;
         }
     }
     
     public void update(Game game) {
         currentAnimation.nextFrame();
-        move(game.map);
+        move(game.map);      
         Tile tile = game.map.getTile(position);
-        if (tile != lastTile) {
-            if (lastTile != null) {
-                lastTile.triggerLeave(game, this);
+        if (tile != this.tile) {
+            if (this.tile != null) {
+                this.tile.triggerLeave(game, this);
             }
             tile.triggerEnter(game, this);
-            lastTile = tile;
+            this.tile = tile;
         }
     }
     

@@ -114,6 +114,7 @@ public abstract class Game implements KeyListener {
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) {
             Entity entity = iterator.next();
             if (entity.destroyed) {
+                map.getTile(entity.position).triggerLeave(this, entity);
                 iterator.remove();
             }
             else {
