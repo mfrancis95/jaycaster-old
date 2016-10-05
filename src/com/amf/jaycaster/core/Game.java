@@ -79,8 +79,8 @@ public abstract class Game implements KeyListener {
         objects.put(name, object);
     }  
     
-    public Object getObject(String name) {
-        return objects.get(name);
+    public <T> T getObject(String name) {
+        return (T) objects.get(name);
     }
     
     public void render(Graphics2D g) {
