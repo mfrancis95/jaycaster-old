@@ -3,6 +3,7 @@ package com.amf.jaycaster.tile;
 import com.amf.jaycaster.graphics.Bitmap;
 import com.amf.jaycaster.entity.Entity;
 import com.amf.jaycaster.core.Game;
+import com.amf.jaycaster.graphics.Lighting;
 import com.amf.jaycaster.graphics.effect.Effect;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,8 @@ public class Tile {
     
     public List<Entity> entities;
     
+    public Lighting lighting;
+    
     public Type type;
     
     private final List<TileEnterListener> enterListeners;
@@ -30,6 +33,7 @@ public class Tile {
     public Tile() {
         effect = Effect.IDENTITY;
         entities = new LinkedList<>();
+        lighting = Lighting.DEFAULT;
         type = Type.FLOOR;
         enterListeners = new LinkedList<>();
         leaveListeners = new LinkedList<>();

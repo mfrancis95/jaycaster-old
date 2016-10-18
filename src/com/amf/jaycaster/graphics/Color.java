@@ -2,6 +2,12 @@ package com.amf.jaycaster.graphics;
 
 public class Color {
     
+    public static final int BLACK = 0;
+    public static final int WHITE = 0xFFFFFF;
+    public static final int RED = 0xFF0000;
+    public static final int GREEN = 0x00FF00;
+    public static final int BLUE = 0x0000FF;
+    
     public static int blend(int oldColor, int newColor, double alpha) {
         if (alpha <= 0) {
             return oldColor;

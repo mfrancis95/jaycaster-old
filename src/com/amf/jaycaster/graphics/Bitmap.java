@@ -50,9 +50,9 @@ public class Bitmap {
         bitmaps.put(name, bitmap);
     }
     
-    public final int[] pixels;
+    public final int height, width;    
     
-    public final int height, width;
+    public final int[] pixels;
     
     public Bitmap(Bitmap bitmap) {
         this(bitmap.width, bitmap.height, Arrays.copyOf(bitmap.pixels, bitmap.pixels.length));

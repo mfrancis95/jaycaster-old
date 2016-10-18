@@ -26,6 +26,7 @@ public class Entity {
     private Tile tile;
     
     public Entity() {
+        visible = true;
         position = new Vector();
         direction = new Vector(1, 0);
         scale = new Vector(1, 1);
@@ -33,7 +34,6 @@ public class Entity {
         effect = Effect.IDENTITY;
         opacity = 1;
         viewDistanceSquared = Double.MAX_VALUE;
-        visible = true;
     }
     
     public void move(Map map) {

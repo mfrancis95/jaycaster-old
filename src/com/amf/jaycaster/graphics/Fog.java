@@ -1,16 +1,21 @@
 package com.amf.jaycaster.graphics;
 
-public class Fog {
+public class Fog extends Lighting {
     
-    public double alpha, distance, distanceSquared;
-    
-    public int color;
+    public double distance, distanceSquared;
     
     private double[] fog, fogSquared;
     
+    public Fog(Fog fog) {
+        this(fog.color, fog.alpha, fog.distance);
+    }
+    
+    public Fog(Lighting lighting, double distance) {
+        this(lighting.color, lighting.alpha, distance);
+    }
+    
     public Fog(int color, double alpha, double distance) {
-        this.color = color;
-        this.alpha = alpha;
+        super(color, alpha);
         this.distance = distance;
         distanceSquared = distance * distance;
     }
@@ -35,6 +40,11 @@ public class Fog {
     
     public boolean isOptimised() {
         return fog != null;
+    }
+    
+    public void setDistance(double distance) {
+        this.distance = distance;
+        distanceSquared = distance * distance;
     }
     
     public void setOptimised(boolean optimised) {
