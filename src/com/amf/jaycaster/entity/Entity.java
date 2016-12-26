@@ -15,7 +15,7 @@ public class Entity {
     
     public Animation currentAnimation;
     
-    public boolean destroyed, visible;
+    public boolean removed, visible;
     
     public Vector direction, position, scale, velocity;
     

@@ -7,22 +7,14 @@ import com.amf.jaycaster.tile.Tile;
 
 public class Map {
     
-    public static enum LightDirection {
-
-        NORTH, SOUTH, EAST, WEST,
-        NORTHEAST, NORTHWEST,
-        SOUTHEAST, SOUTHWEST
-
-    }
-    
-    public static final int NEIGHBOR_NORTH = 0;
-    public static final int NEIGHBOR_SOUTH = 1;
-    public static final int NEIGHBOR_EAST = 2;
-    public static final int NEIGHBOR_WEST = 3;
-    public static final int NEIGHBOR_NORTHEAST = 4;
-    public static final int NEIGHBOR_NORTHWEST = 5;
-    public static final int NEIGHBOR_SOUTHEAST = 6;
-    public static final int NEIGHBOR_SOUTHWEST = 7;
+    public static final int DIRECTION_NORTH = 0;
+    public static final int DIRECTION_SOUTH = 1;
+    public static final int DIRECTION_EAST = 2;
+    public static final int DIRECTION_WEST = 3;
+    public static final int DIRECTION_NORTHEAST = 4;
+    public static final int DIRECTION_NORTHWEST = 5;
+    public static final int DIRECTION_SOUTHEAST = 6;
+    public static final int DIRECTION_SOUTHWEST = 7;
     
     public final int columns, rows;
     
@@ -30,36 +22,32 @@ public class Map {
     
     public boolean experimentalEffect;
     
-    public int experimentalHeight;
+    public int experimentalHeight = 1;
     
-    public Fog fog;
+    public Fog fog = new Fog(0, 0, 0);
     
-    public LightDirection lightDirection;
+    public int lightDirection = DIRECTION_NORTHEAST;
     
-    private final Tile[] neighbors, tiles;
+    private final Tile[] neighbors = new Tile[8], tiles;
 
     public Map(int rows, int columns) {
-        this.tiles = new Tile[rows * columns];
+        tiles = new Tile[rows * columns];
         for (int i = 0; i < tiles.length; i++) {
-            this.tiles[i] = new Tile();
+            tiles[i] = new Tile();
         }
         this.rows = rows;
         this.columns = columns;
-        experimentalHeight = 1;
-        fog = new Fog(0, 0, 0);
-        lightDirection = LightDirection.NORTHEAST;
-        neighbors = new Tile[8];
     }
     
     public Tile[] getNeighbors(int x, int y) {
-        neighbors[NEIGHBOR_NORTH] = getTile(x, y - 1);
-        neighbors[NEIGHBOR_SOUTH] = getTile(x, y + 1);
-        neighbors[NEIGHBOR_EAST] = getTile(x + 1, y);
-        neighbors[NEIGHBOR_WEST] = getTile(x - 1, y);
-        neighbors[NEIGHBOR_NORTHEAST] = getTile(x + 1, y - 1);
-        neighbors[NEIGHBOR_NORTHWEST] = getTile(x - 1, y - 1);
-        neighbors[NEIGHBOR_SOUTHEAST] = getTile(x + 1, y + 1);
-        neighbors[NEIGHBOR_SOUTHWEST] = getTile(x - 1, y + 1);     
+        neighbors[DIRECTION_NORTH] = getTile(x, y - 1);
+        neighbors[DIRECTION_SOUTH] = getTile(x, y + 1);
+        neighbors[DIRECTION_EAST] = getTile(x + 1, y);
+        neighbors[DIRECTION_WEST] = getTile(x - 1, y);
+        neighbors[DIRECTION_NORTHEAST] = getTile(x + 1, y - 1);
+        neighbors[DIRECTION_NORTHWEST] = getTile(x - 1, y - 1);
+        neighbors[DIRECTION_SOUTHEAST] = getTile(x + 1, y + 1);
+        neighbors[DIRECTION_SOUTHWEST] = getTile(x - 1, y + 1);     
         return neighbors;
     }
     
@@ -80,22 +68,22 @@ public class Map {
         }
     }
     
-    public void light(int x, int y, Lighting lighting, boolean lightWalls) {
+    public void light(int x, int y, Lighting lighting, boolean lightRaised) {
         getTile(x, y).lighting = lighting;
         Lighting dimmer = new Lighting(lighting);
         dimmer.alpha += dimmer.alpha;
         Lighting evenDimmer = new Lighting(lighting);
         evenDimmer.alpha += evenDimmer.alpha + evenDimmer.alpha;
         getNeighbors(x, y);
-        for (int i = 0; i < 4; i++) {
+        for (int i = DIRECTION_NORTH; i <= DIRECTION_WEST; i++) {
             Tile tile = neighbors[i];
-            if (tile != null && (lightWalls || !tile.isRaised())) {
+            if (tile != null && (lightRaised || !tile.isRaised())) {
                 tile.lighting = dimmer;
             }
         }
-        for (int i = 4; i < 8; i++) {
+        for (int i = DIRECTION_NORTHEAST; i <= DIRECTION_SOUTHWEST; i++) {
             Tile tile = neighbors[i];
-            if (tile != null && (lightWalls || !tile.isRaised())) {
+            if (tile != null && (lightRaised || !tile.isRaised())) {
                 tile.lighting = evenDimmer;
             }
         }

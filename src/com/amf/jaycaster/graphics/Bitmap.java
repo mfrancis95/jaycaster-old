@@ -16,11 +16,7 @@ public class Bitmap {
     
     public static Bitmap fallback;
     
-    private static final HashMap<String, Bitmap> bitmaps;
-    
-    static {
-        bitmaps = new HashMap<>();
-    }
+    private static final HashMap<String, Bitmap> bitmaps = new HashMap<>();
     
     public static Bitmap get(String name) {
         Bitmap bitmap = bitmaps.get(name);

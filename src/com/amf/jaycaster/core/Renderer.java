@@ -4,8 +4,8 @@ import com.amf.jaycaster.graphics.Bitmap;
 import com.amf.jaycaster.graphics.Color;
 import com.amf.jaycaster.entity.Entity;
 import com.amf.jaycaster.tile.Tile;
-import com.amf.jaycaster.core.Map.LightDirection;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
 
@@ -16,6 +16,8 @@ public class Renderer {
     public int raySkip;
     
     private final double[] cameraTable, zBuffer;
+    
+    private final boolean[] rendered;
     
     private final Bitmap screen;
     
@@ -36,28 +38,30 @@ public class Renderer {
         }
         this.renderTasks = new RenderTask[renderTasks];
         int pixels = screen.width / renderTasks;
-        for (int i = 0; i < renderTasks; i++) {
+        for (int i = 0; i < renderTasks - 1; i++) {
             this.renderTasks[i] = new RenderTask(i * pixels, i * pixels + pixels);
         }
+        this.renderTasks[renderTasks - 1] = new RenderTask((renderTasks - 1) * pixels, screen.width);
         plane = new Vector();
+        rendered = new boolean[screen.width];
         translated = new Vector();
     }
 
-    private boolean isShaded(boolean side, double rayDirX, double rayDirY, LightDirection lightDirection) {
+    private boolean isShaded(boolean side, double rayDirX, double rayDirY, int lightDirection) {
         switch (lightDirection) {
-            case NORTH:
+            case Map.DIRECTION_NORTH:
                 return side && rayDirY > 0 || !side;
-            case SOUTH:
+            case Map.DIRECTION_SOUTH:
                 return side && rayDirY < 0 || !side;
-            case EAST:
+            case Map.DIRECTION_EAST:
                 return !side && rayDirX < 0 || side;
-            case WEST:
+            case Map.DIRECTION_WEST:
                 return !side && rayDirX > 0 || side;
-            case NORTHEAST:
+            case Map.DIRECTION_NORTHEAST:
                 return side && rayDirY > 0 || !side && rayDirX < 0;
-            case NORTHWEST:
+            case Map.DIRECTION_NORTHWEST:
                 return side && rayDirY > 0 || !side && rayDirX > 0;
-            case SOUTHEAST:
+            case Map.DIRECTION_SOUTHEAST:
                 return side && rayDirY < 0 || !side && rayDirX < 0;
             default:
                 return side && rayDirY < 0 || !side && rayDirX > 0;
@@ -74,9 +78,6 @@ public class Renderer {
         for (RenderTask renderTask : renderTasks) {
             renderTask.reinitialize();
             renderTask.fork();
-        }
-        for (RenderTask renderTask : renderTasks) {
-            renderTask.join();
         }
         for (Entity entity : entities) {
             if (!entity.visible) {
@@ -113,6 +114,9 @@ public class Renderer {
                 drawEndX = screen.width - 1;
             }
             for (int x = drawStartX; x < drawEndX; x++) {
+                while (!rendered[x]) {
+                    Thread.yield();
+                }
                 if (transformY > 0 && transformY < zBuffer[x]) {
                     for (int y = Math.max(0, drawStartY); y < Math.min(screen.height, drawEndY); y++) {
                         int texX = (x - (-entityWidth / 2 + entityScreenX)) * bitmap.width / entityWidth;
@@ -133,6 +137,10 @@ public class Renderer {
                 }
             }
         }
+        for (RenderTask renderTask : renderTasks) {
+            renderTask.join();
+        }
+        Arrays.fill(rendered, false);
     }
     
     private class RenderTask extends RecursiveAction {
@@ -156,6 +164,7 @@ public class Renderer {
                 direction.scale(cameraTable[x]);
                 direction.add(camera.direction);
                 ray.cast(map, camera.position, direction);
+                zBuffer[x] = ray.distance;
                 int lineHeight = (int) (screen.height / ray.distance);
                 int drawStart = (int) (screen.height * camera.pitch - lineHeight * (1 - camera.height));
                 int drawEnd = (int) (screen.height * camera.pitch + lineHeight * camera.height);
@@ -199,7 +208,6 @@ public class Renderer {
                         }
                     }
                 }
-                zBuffer[x] = ray.distance;
                 //Render floors and ceilings
                 double floorXWall, floorYWall;
                 if (!ray.side && direction.x > 0) {
@@ -241,7 +249,7 @@ public class Renderer {
                         if (map.experimentalEffect) {
                             pixel = Color.blend(pixel, 0, weight);
                         }
-                        pixel = map.fog.blend(pixel, distance);
+                        pixel = map.fog.blend(pixel, Math.abs(distance));
                     }
                     for (int i = 0; i <= raySkip; i++) {
                         int heightY = y - 1;
@@ -271,7 +279,7 @@ public class Renderer {
                         if (map.experimentalEffect) {
                             pixel = Color.blend(pixel, 0, weight);
                         }
-                        pixel = map.fog.blend(pixel, distance);
+                        pixel = map.fog.blend(pixel, Math.abs(distance));
                     }
                     for (int i = 0; i <= raySkip; i++) {
                         int heightY = y - 1;
@@ -280,6 +288,7 @@ public class Renderer {
                         }
                     }
                 }
+                rendered[x] = true;
             }
         }
 

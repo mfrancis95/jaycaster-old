@@ -30,23 +30,17 @@ public abstract class Game implements KeyListener {
     
     public Camera currentCamera;
     
-    public List<Entity> entities;
+    public List<Entity> entities = new LinkedList<>();
     
     public Map map;
     
     public Renderer renderer;
     
-    private final HashMap<String, Object> objects;
-    
-    private final Screen screen;
-    
-    private final Set<ScheduledGameTask> tasks;
-    
-    private final Vector temp1, temp2;    
-    
-    private final JFrame window;
-    
     private final Comparator<Entity> comparator = new Comparator<Entity>() {
+        
+        Vector temp1 = new Vector();
+        
+        Vector temp2 = new Vector();
 
         public int compare(Entity e1, Entity e2) {
             temp1.set(e1.position);
@@ -57,10 +51,17 @@ public abstract class Game implements KeyListener {
         }
     };
     
+    private final HashMap<String, Object> objects = new HashMap<>();
+    
+    private final Screen screen = new Screen();
+    
+    private final Set<ScheduledGameTask> tasks = new TreeSet<>();
+    
+    private final JFrame window;
+    
     private boolean running;
     
     public Game(String title, int windowWidth, int windowHeight, int targetFPS) {
-        screen = new Screen();
         screen.setPreferredSize(new Dimension(windowWidth, windowHeight));
         window = new JFrame(title);
         window.add(screen);
@@ -68,11 +69,6 @@ public abstract class Game implements KeyListener {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.targetFPS = targetFPS;
         maxTicks = 1000 / targetFPS;
-        entities = new LinkedList<>();
-        objects = new HashMap<>();
-        tasks = new TreeSet<>();
-        temp1 = new Vector();
-        temp2 = new Vector();
     }
     
     public void addObject(String name, Object object) {
@@ -113,7 +109,7 @@ public abstract class Game implements KeyListener {
         }
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) {
             Entity entity = iterator.next();
-            if (entity.destroyed) {
+            if (entity.removed) {
                 map.getTile(entity.position).triggerLeave(this, entity);
                 iterator.remove();
             }
@@ -157,8 +153,8 @@ public abstract class Game implements KeyListener {
         }
 
         public int compareTo(ScheduledGameTask task) {
-            int result = (int) (tick - task.tick);
-            return result == 0 ? 1 : result;
+            long result = tick - task.tick;
+            return result == 0 ? 1 : (int) result;
         }
         
     }

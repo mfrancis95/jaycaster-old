@@ -57,14 +57,10 @@ public class Ray {
         }
         if (side) {
             distance = (mapY - position.y + (1 - stepY) / 2) / direction.y;
-        } 
-        else {
-            distance = (mapX - position.x + (1 - stepX) / 2) / direction.x;
-        }
-        if (side) {
             wallX = position.x + distance * direction.x;
         } 
         else {
+            distance = (mapX - position.x + (1 - stepX) / 2) / direction.x;
             wallX = position.y + distance * direction.y;
         }
         wallX -= (int) wallX;

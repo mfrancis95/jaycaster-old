@@ -2,12 +2,9 @@ package com.amf.jaycaster.core;
 
 public class FastMath {
     
-    private static final double[] cos, sin, tan;
+    private static final double[] cos = new double[360], sin = new double[360], tan = new double[360];
     
     static {
-        sin = new double[360];
-        cos = new double[360];
-        tan = new double[360];
         for (int i = 0; i < 360; i++) {
             double radians = Math.toRadians(i);
             sin[i] = Math.sin(radians);

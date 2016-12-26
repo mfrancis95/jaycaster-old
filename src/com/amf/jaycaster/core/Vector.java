@@ -42,9 +42,11 @@ public class Vector {
     }
     
     public void rotate(double degrees) {
-        double cos = FastMath.cos(degrees), sin = FastMath.sin(degrees);
-        this.x = this.x * cos - this.y * sin;
-        this.y = this.x * sin + this.y * cos;
+        double cos = FastMath.cos(degrees);
+        double sin = FastMath.sin(degrees);
+        double oldX = x;
+        x = oldX * cos - y * sin;
+        y = oldX * sin + y * cos;
     }
     
     public void scale(double scale) {
