@@ -39,6 +39,10 @@ public class Map {
         this.columns = columns;
     }
     
+    public Tile[] getNeighbors(double x, double y) {
+        return getNeighbors((int) x, (int) y);
+    }
+    
     public Tile[] getNeighbors(int x, int y) {
         neighbors[DIRECTION_NORTH] = getTile(x, y - 1);
         neighbors[DIRECTION_SOUTH] = getTile(x, y + 1);

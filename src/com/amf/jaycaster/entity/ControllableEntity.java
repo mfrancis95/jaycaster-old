@@ -16,7 +16,7 @@ public class ControllableEntity extends Entity {
     
     public double acceleration, friction, maxSpeed, turnSpeed;
     
-    private final Vector forward, strafe;
+    private final Vector forward = new Vector(), strafe = new Vector();
     
     private double forwardThrust, strafeThrust;
     
@@ -30,8 +30,6 @@ public class ControllableEntity extends Entity {
         this.friction = friction;
         this.maxSpeed = maxSpeed;
         this.turnSpeed = turnSpeed;
-        forward = new Vector();
-        strafe = new Vector();
     }
     
     public void update(Game game) {
