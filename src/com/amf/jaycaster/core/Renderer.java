@@ -27,7 +27,7 @@ public class Renderer {
     
     private Camera camera;
     
-    private Map map;
+    private World world;
     
     public Renderer(BufferedImage image, int renderTasks) {
         screen = new Bitmap(image);
@@ -49,27 +49,27 @@ public class Renderer {
 
     private boolean isShaded(boolean side, double rayDirX, double rayDirY, int lightDirection) {
         switch (lightDirection) {
-            case Map.DIRECTION_NORTH:
+            case World.DIRECTION_NORTH:
                 return side && rayDirY > 0 || !side;
-            case Map.DIRECTION_SOUTH:
+            case World.DIRECTION_SOUTH:
                 return side && rayDirY < 0 || !side;
-            case Map.DIRECTION_EAST:
+            case World.DIRECTION_EAST:
                 return !side && rayDirX < 0 || side;
-            case Map.DIRECTION_WEST:
+            case World.DIRECTION_WEST:
                 return !side && rayDirX > 0 || side;
-            case Map.DIRECTION_NORTHEAST:
+            case World.DIRECTION_NORTHEAST:
                 return side && rayDirY > 0 || !side && rayDirX < 0;
-            case Map.DIRECTION_NORTHWEST:
+            case World.DIRECTION_NORTHWEST:
                 return side && rayDirY > 0 || !side && rayDirX > 0;
-            case Map.DIRECTION_SOUTHEAST:
+            case World.DIRECTION_SOUTHEAST:
                 return side && rayDirY < 0 || !side && rayDirX < 0;
             default:
                 return side && rayDirY < 0 || !side && rayDirX > 0;
         }
     }
 
-    public void render(Map map, List<Entity> entities, Camera camera) {
-        this.map = map;
+    public void render(World world, List<Entity> entities, Camera camera) {
+        this.world = world;
         this.camera = camera;
         plane.x = -camera.direction.y;
         plane.y = camera.direction.x;
@@ -100,7 +100,7 @@ public class Renderer {
             int entityScreenX = (int) (screen.width / 2 * (1 + transformX / transformY));
 
             int entityHeight = (int) (screen.height / transformY * entity.scale.y);
-            Bitmap bitmap = entity.currentAnimation.getFrame();
+            Bitmap bitmap = Bitmap.get(entity.currentAnimation.getFrame());
             double yOffset = entity.yOffset + camera.height;
             int drawStartY = (int) (screen.height * camera.pitch - entityHeight * (1 - yOffset));
             int drawEndY = (int) (entityHeight * yOffset + screen.height * camera.pitch);
@@ -123,9 +123,9 @@ public class Renderer {
                         int texY = (int) (bitmap.height * ((y - drawStartY) / (entityHeight + 1.0)));
                         int pixel = entity.effect.affect(bitmap, texX, texY);
                         if (pixel != 0) {
-                            Tile tile = map.getTile(entity.position);
+                            Tile tile = world.getTile(entity.position);
                             pixel = Color.blend(pixel, tile.lighting.color, tile.lighting.alpha);
-                            pixel = map.fog.blendSquared(pixel, distanceSquared);
+                            pixel = world.fog.blendSquared(pixel, distanceSquared);
                             if (entity.opacity < 1) {
                                 pixel = Color.blend(screen.getPixel(x, y), pixel, entity.opacity);
                             }                            
@@ -163,19 +163,19 @@ public class Renderer {
                 direction.set(plane);
                 direction.scale(cameraTable[x]);
                 direction.add(camera.direction);
-                ray.cast(map, camera.position, direction);
+                ray.cast(world, camera.position, direction);
                 zBuffer[x] = ray.distance;
-                int lineHeight = (int) (screen.height / ray.distance);
+                double lineHeight = screen.height / ray.distance;
                 int drawStart = (int) (screen.height * camera.pitch - lineHeight * (1 - camera.height));
                 int drawEnd = (int) (screen.height * camera.pitch + lineHeight * camera.height);
                 //Render walls
                 if (ray.tile.backgroundWall) {
-                    Bitmap bitmap = map.background;
+                    Bitmap bitmap = Bitmap.get(world.backgroundBitmap);
                     int bitmapX = x * bitmap.width / screen.width;
                     for (int y = drawStart; y < drawEnd; y++) {
                         for (int i = 0; i <= raySkip; i++) {
-                            for (int j = 1; j <= map.experimentalHeight; j++) {
-                                int heightY = y - (lineHeight - 1) * (j - 1);
+                            for (int j = 1; j <= world.experimentalHeight; j++) {
+                                int heightY = (int) (y - (lineHeight - 1) * (j - 1));
                                 if (heightY >= 0) {
                                     int pixel = bitmap.getPixel(bitmapX, heightY * bitmap.height / screen.height);
                                     screen.setPixel(x + i, heightY, pixel);
@@ -185,22 +185,27 @@ public class Renderer {
                     }
                 }
                 else {
-                    boolean shaded = isShaded(ray.side, direction.x, direction.y, map.lightDirection);
-                    Bitmap bitmap = ray.tile.wallBitmap;
+                    boolean shaded = isShaded(ray.side, direction.x, direction.y, world.lightDirection);
+                    Bitmap bitmap = Bitmap.get(ray.tile.wallBitmap);
                     int bitmapX = (int) (bitmap.width * ray.wallX);
                     if (!ray.side && direction.x > 0 || ray.side && direction.y < 0) {
                         bitmapX = bitmap.width - bitmapX - 1;
                     }
+                    double yIncrement = bitmap.height / (drawEnd - drawStart - 0.0), yy = 0;
                     for (int y = drawStart; y < drawEnd; y++) {
-                        int pixel = ray.tile.effect.affect(bitmap, bitmapX, (int) (bitmap.height * ((y - drawStart) / (lineHeight + 1.0))));
+                        int pixel = ray.tile.effect.affect(bitmap, bitmapX, (int) yy);
+                        yy += yIncrement;
+                        if (yy >= bitmap.height) {
+                            yy = 0;
+                        }
                         if (shaded) {
                             pixel = Color.blend(pixel, 0, 0.5);
                         }
                         pixel = Color.blend(pixel, ray.tile.lighting.color, ray.tile.lighting.alpha);
-                        pixel = map.fog.blend(pixel, ray.distance);
+                        pixel = world.fog.blend(pixel, ray.distance);
                         for (int i = 0; i <= raySkip; i++) {
-                            for (int j = 1; j <= map.experimentalHeight; j++) {
-                                int heightY = y - (lineHeight - 1) * (j - 1);
+                            for (int j = 1; j <= world.experimentalHeight; j++) {
+                                int heightY = (int) (y - (lineHeight - 1) * (j - 1));
                                 if (heightY >= 0 && heightY < screen.height) {
                                     screen.setPixel(x + i, heightY, pixel);
                                 }
@@ -234,22 +239,22 @@ public class Renderer {
                     weight -= Math.floor(weight);
                     double currentFloorX = weight * floorXWall + (1 - weight) * camera.position.x;
                     double currentFloorY = weight * floorYWall + (1 - weight) * camera.position.y;
-                    Tile tile = map.getTile(currentFloorX, currentFloorY);
+                    Tile tile = world.getTile(currentFloorX, currentFloorY);
                     int pixel;
                     if (onlyWalls || tile.backgroundFloor) {
-                        Bitmap bitmap = map.background;
+                        Bitmap bitmap = Bitmap.get(world.backgroundBitmap);
                         pixel = bitmap.getPixel(x * bitmap.width / screen.width, y * bitmap.height / screen.height);
                     } 
                     else {
-                        Bitmap bitmap = tile.floorBitmap;
+                        Bitmap bitmap = Bitmap.get(tile.floorBitmap);
                         int floorTexX = (int) (currentFloorX * bitmap.width) % bitmap.width;
                         int floorTexY = (int) (currentFloorY * bitmap.height) % bitmap.height;
                         pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
                         pixel = Color.blend(pixel, tile.lighting.color, tile.lighting.alpha);
-                        if (map.experimentalEffect) {
+                        if (world.experimentalEffect) {
                             pixel = Color.blend(pixel, 0, weight);
                         }
-                        pixel = map.fog.blend(pixel, Math.abs(distance));
+                        pixel = world.fog.blend(pixel, Math.abs(distance));
                     }
                     for (int i = 0; i <= raySkip; i++) {
                         int heightY = y - 1;
@@ -258,28 +263,28 @@ public class Renderer {
                         }
                     }
                 }            
-                for (int y = 0; y <= drawStart - lineHeight * (map.experimentalHeight - 1); y++) {
+                for (int y = 0; y <= drawStart - lineHeight * (world.experimentalHeight - 1); y++) {
                     double distance = screen.height / ((screen.height - (y + diffY)) / (1 - camera.height) - screen.height);
                     double weight = distance / ray.distance;
                     weight -= Math.floor(weight);
                     double currentCeilingX = weight * floorXWall + (1 - weight) * camera.position.x;
                     double currentCeilingY = weight * floorYWall + (1 - weight) * camera.position.y;
-                    Tile tile = map.getTile(currentCeilingX, currentCeilingY);
+                    Tile tile = world.getTile(currentCeilingX, currentCeilingY);
                     int pixel;
                     if (onlyWalls || tile.backgroundCeiling) {
-                        Bitmap bitmap = map.background;
+                        Bitmap bitmap = Bitmap.get(world.backgroundBitmap);
                         pixel = bitmap.getPixel(x * bitmap.width / screen.width, y * bitmap.height / screen.height);
                     } 
                     else {
-                        Bitmap bitmap = tile.ceilingBitmap;
+                        Bitmap bitmap = Bitmap.get(tile.ceilingBitmap);
                         int floorTexX = (int) (currentCeilingX * bitmap.width) % bitmap.width;
                         int floorTexY = (int) (currentCeilingY * bitmap.height) % bitmap.height;
                         pixel = tile.effect.affect(bitmap, floorTexX, floorTexY);
                         pixel = Color.blend(pixel, tile.lighting.color, tile.lighting.alpha);
-                        if (map.experimentalEffect) {
+                        if (world.experimentalEffect) {
                             pixel = Color.blend(pixel, 0, weight);
                         }
-                        pixel = map.fog.blend(pixel, Math.abs(distance));
+                        pixel = world.fog.blend(pixel, Math.abs(distance));
                     }
                     for (int i = 0; i <= raySkip; i++) {
                         int heightY = y - 1;

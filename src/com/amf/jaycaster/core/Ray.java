@@ -18,7 +18,7 @@ public class Ray {
     
     private int stepX, stepY;
     
-    public void cast(Map map, Vector position, Vector direction) {
+    public void cast(World world, Vector position, Vector direction) {
         mapX = (int) position.x;
         mapY = (int) position.y;
         deltaDistX = Math.sqrt(1 + (direction.y * direction.y) / (direction.x * direction.x));
@@ -51,7 +51,7 @@ public class Ray {
                 mapY += stepY;
                 side = true;
             }
-            if ((tile = map.getTile(mapX, mapY)).isRaised()) {
+            if ((tile = world.getTile(mapX, mapY)).isRaised()) {
                 hit = true;
             }
         }

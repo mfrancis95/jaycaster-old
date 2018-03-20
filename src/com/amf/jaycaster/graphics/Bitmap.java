@@ -4,7 +4,6 @@ import com.amf.jaycaster.graphics.effect.Effect;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -34,7 +33,7 @@ public class Bitmap {
         bitmaps.put(name.substring(0, name.indexOf(".")), new Bitmap(image));
     }
     
-    public static void loadFile(String file) throws IOException, MalformedURLException, URISyntaxException {
+    public static void loadFile(String file) throws IOException, URISyntaxException {
         load(new URL(file));
     }
     

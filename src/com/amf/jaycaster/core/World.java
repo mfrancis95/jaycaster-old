@@ -1,11 +1,16 @@
 package com.amf.jaycaster.core;
 
-import com.amf.jaycaster.graphics.Bitmap;
 import com.amf.jaycaster.graphics.Fog;
 import com.amf.jaycaster.graphics.Lighting;
 import com.amf.jaycaster.tile.Tile;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
 
-public class Map {
+public class World {
     
     public static final int DIRECTION_NORTH = 0;
     public static final int DIRECTION_SOUTH = 1;
@@ -18,7 +23,7 @@ public class Map {
     
     public final int columns, rows;
     
-    public Bitmap background;
+    public String backgroundBitmap;
     
     public boolean experimentalEffect;
     
@@ -29,8 +34,31 @@ public class Map {
     public int lightDirection = DIRECTION_NORTHEAST;
     
     private final Tile[] neighbors = new Tile[8], tiles;
+    
+    public World(URL url) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            String[] split = reader.readLine().split(",");
+            rows = Integer.parseInt(split[0]);
+            columns = Integer.parseInt(split[1]);
+            tiles = new Tile[rows * columns];
+            for (int i = 0; i < tiles.length; i++) {
+                tiles[i] = new Tile();
+            }
+            while (reader.ready()) {
+                split = reader.readLine().split(",");
+                Tile tile = getTile(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                tile.type = Tile.Type.valueOf(split[2]);
+                tile.ceilingBitmap = split[3];
+                tile.floorBitmap = split[4];
+                tile.wallBitmap = split[5];
+                tile.backgroundCeiling = Boolean.parseBoolean(split[6]);
+                tile.backgroundFloor = Boolean.parseBoolean(split[7]);
+                tile.backgroundWall = Boolean.parseBoolean(split[8]);
+            }
+        }
+    }
 
-    public Map(int rows, int columns) {
+    public World(int rows, int columns) {
         tiles = new Tile[rows * columns];
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile();
@@ -89,6 +117,20 @@ public class Map {
             Tile tile = neighbors[i];
             if (tile != null && (lightRaised || !tile.isRaised())) {
                 tile.lighting = evenDimmer;
+            }
+        }
+    }
+    
+    public void save(String file) throws FileNotFoundException {
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.printf("%d,%d\n", rows, columns);
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    Tile tile = getTile(i, j);
+                    writer.print(tile.type.toString());
+                    writer.printf(",%s,%s,%s", tile.ceilingBitmap, tile.floorBitmap, tile.wallBitmap);
+                    writer.printf(",%b,%b,%b\n", tile.backgroundCeiling, tile.backgroundFloor, tile.backgroundWall);
+                }
             }
         }
     }

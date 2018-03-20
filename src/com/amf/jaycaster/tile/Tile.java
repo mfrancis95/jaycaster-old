@@ -1,6 +1,5 @@
 package com.amf.jaycaster.tile;
 
-import com.amf.jaycaster.graphics.Bitmap;
 import com.amf.jaycaster.entity.Entity;
 import com.amf.jaycaster.core.Game;
 import com.amf.jaycaster.graphics.Lighting;
@@ -16,7 +15,7 @@ public class Tile {
     
     public boolean backgroundCeiling, backgroundFloor, backgroundWall;
     
-    public Bitmap ceilingBitmap, floorBitmap, wallBitmap;
+    public String ceilingBitmap, floorBitmap, wallBitmap;
     
     public Effect effect;
     
@@ -63,7 +62,7 @@ public class Tile {
         leaveListeners.remove(listener);
     }
     
-    public void setBitmaps(Bitmap bitmap) {
+    public void setBitmaps(String bitmap) {
         ceilingBitmap = floorBitmap = wallBitmap = bitmap;
     }    
     

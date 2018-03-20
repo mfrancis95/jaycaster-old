@@ -4,27 +4,27 @@ public class Animation {
     
     public static final int REPETITIONS_INFINITE = -1;
     
-    public Bitmap[] bitmaps;
+    public String[] bitmaps;
     
     public int repetitions, ticksPerFrame;
     
     private int index, repetitionCount, tick;
     
-    public Animation(Bitmap bitmap) {
-        bitmaps = new Bitmap[] {bitmap};
+    public Animation(String bitmap) {
+        bitmaps = new String[] {bitmap};
     }
     
-    public Animation(Bitmap[] bitmaps, int ticksPerFrame) {
-        this(bitmaps, ticksPerFrame, REPETITIONS_INFINITE);
+    public Animation(int ticksPerFrame, String... bitmaps) {
+        this(ticksPerFrame, REPETITIONS_INFINITE, bitmaps);
     }
     
-    public Animation(Bitmap[] bitmaps, int ticksPerFrame, int repetitions) {
-        this.bitmaps = bitmaps;
+    public Animation(int ticksPerFrame, int repetitions, String... bitmaps) {
         this.ticksPerFrame = ticksPerFrame;
         this.repetitions = repetitions;
+        this.bitmaps = bitmaps;
     }
     
-    public Bitmap getFrame() {
+    public String getFrame() {
         return bitmaps[index];
     }
     

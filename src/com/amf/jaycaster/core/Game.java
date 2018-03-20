@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,7 @@ public abstract class Game implements KeyListener {
     
     public List<Entity> entities = new LinkedList<>();
     
-    public Map map;
+    public World world;
     
     public Renderer renderer;
     
@@ -51,7 +52,7 @@ public abstract class Game implements KeyListener {
         }
     };
     
-    private final HashMap<String, Object> objects = new HashMap<>();
+    private final Map<String, Object> objects = new HashMap<>();
     
     private final Screen screen = new Screen();
     
@@ -110,7 +111,7 @@ public abstract class Game implements KeyListener {
         for (Iterator<Entity> iterator = entities.iterator(); iterator.hasNext();) {
             Entity entity = iterator.next();
             if (entity.removed) {
-                map.getTile(entity.position).triggerLeave(this, entity);
+                world.getTile(entity.position).triggerLeave(this, entity);
                 iterator.remove();
             }
             else {
@@ -127,7 +128,7 @@ public abstract class Game implements KeyListener {
             while (running) {
                 long ticks = System.currentTimeMillis();
                 update();
-                renderer.render(map, entities, currentCamera);
+                renderer.render(world, entities, currentCamera);
                 screen.repaint();
                 ticks = System.currentTimeMillis() - ticks;
                 if (ticks < maxTicks) {
